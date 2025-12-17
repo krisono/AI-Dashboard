@@ -53,15 +53,6 @@ export default function HomePage() {
           <Link href="/dashboard">
             <Button size="lg">Enter Dashboard</Button>
           </Link>
-
-          <Card className="w-full border-amber-200 bg-amber-50/50">
-            <CardContent className="pt-4 pb-4">
-              <p className="text-sm text-amber-900/80 text-center">
-                <span className="font-medium">Educational Demo:</span> AI
-                recommendations are advisory only. Not for clinical use.
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
