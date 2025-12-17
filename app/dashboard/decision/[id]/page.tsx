@@ -21,7 +21,19 @@ import {
   XCircle,
   AlertTriangle,
   FileText,
+  Save,
+  Send,
+  Loader2,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function DecisionPage({
   params,
@@ -39,6 +51,8 @@ export default function DecisionPage({
     "confirm" | "reject" | "second-review" | null
   >(null);
   const [draftReport, setDraftReport] = useState("");
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(false);
 
   useEffect(() => {
     const foundCase = getCaseById(resolvedParams.id);
@@ -77,6 +91,22 @@ export default function DecisionPage({
     } else {
       executeAction(action);
     }
+  };
+
+  const saveDraft = () => {
+    if (!caseData) return;
+    setIsSavingDraft(true);
+
+    // Simulate saving draft
+    setTimeout(() => {
+      console.log("Draft saved:", {
+        caseId: caseData.id,
+        feedbackNote,
+        selectedTags,
+        draftReport,
+      });
+      setIsSavingDraft(false);
+    }, 500);
   };
 
   const executeAction = (action: "confirm" | "reject" | "second-review") => {
@@ -119,8 +149,13 @@ export default function DecisionPage({
     // In a real app, this would update the case status
     console.log("Decision recorded:", decision);
 
-    // Navigate back to queue
-    router.push("/dashboard/queue");
+    // Mark as finalized
+    setIsFinalized(true);
+
+    // Navigate back to queue after a short delay
+    setTimeout(() => {
+      router.push("/dashboard/queue");
+    }, 1500);
   };
 
   const handleConfirm = () => {
@@ -346,14 +381,37 @@ Report Status: DRAFT - Requires Review and Signature
               htmlFor="feedback-note"
               className="text-sm font-medium mb-2 block"
             >
-              Additional Notes (Optional)
+              Additional Notes
             </label>
-            <Input
+            <Textarea
               id="feedback-note"
-              placeholder="Add any additional context or observations..."
+              placeholder="Add any additional context, observations, or clinical reasoning..."
               value={feedbackNote}
               onChange={(e) => setFeedbackNote(e.target.value)}
+              rows={4}
             />
+          </div>
+
+          {/* Save Draft Button */}
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={saveDraft}
+              disabled={isSavingDraft}
+            >
+              {isSavingDraft ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Draft
+                </>
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -374,11 +432,33 @@ Report Status: DRAFT - Requires Review and Signature
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {draftReport ? (
-            <pre className="text-xs bg-muted p-4 rounded-lg overflow-auto max-h-96 whitespace-pre-wrap font-mono">
-              {draftReport}
-            </pre>
+            <>
+              <Textarea
+                value={draftReport}
+                onChange={(e) => setDraftReport(e.target.value)}
+                className="font-mono text-xs min-h-[400px]"
+              />
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-muted-foreground">
+                  Edit the report as needed before finalizing
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDraftReport("")}
+                  >
+                    Clear
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={saveDraft}>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Draft
+                  </Button>
+                </div>
+              </div>
+            </>
           ) : (
             <p className="text-sm text-muted-foreground text-center py-8">
               Click "Generate Report" to create a draft report for this case
@@ -388,57 +468,89 @@ Report Status: DRAFT - Requires Review and Signature
       </Card>
 
       {/* Confirmation Dialog */}
-      {showConfirmation && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="max-w-md w-full">
-            <CardHeader>
-              <CardTitle>Confirm Action</CardTitle>
-              <CardDescription>
-                This is a {caseData.riskScore > 75 ? "high-risk" : "uncertain"}{" "}
-                case. Please confirm your decision.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted p-4 rounded-lg text-sm">
-                <p>
-                  <strong>Case:</strong> {caseData.id}
-                </p>
-                <p>
-                  <strong>Risk Score:</strong> {caseData.riskScore}/100
-                </p>
-                <p>
-                  <strong>Action:</strong>{" "}
-                  {pendingAction?.replace(/-/g, " ").toUpperCase()}
-                </p>
-                <p>
-                  <strong>Selected Tags:</strong>{" "}
-                  {selectedTags.length > 0 ? selectedTags.join(", ") : "None"}
-                </p>
-              </div>
+      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Action</DialogTitle>
+            <DialogDescription>
+              This is a {caseData.riskScore > 75 ? "high-risk" : "uncertain"}{" "}
+              case. Please confirm your decision.
+            </DialogDescription>
+          </DialogHeader>
 
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowConfirmation(false);
-                    setPendingAction(null);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="default"
-                  className="flex-1"
-                  onClick={handleConfirm}
-                >
-                  Confirm Decision
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+          <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
+            <p>
+              <strong>Case:</strong> {caseData.id}
+            </p>
+            <p>
+              <strong>Patient:</strong> {caseData.patientMaskedId}
+            </p>
+            <p>
+              <strong>Risk Score:</strong> {caseData.riskScore}/100
+            </p>
+            <p>
+              <strong>Action:</strong>{" "}
+              {pendingAction?.replace(/-/g, " ").toUpperCase()}
+            </p>
+            <p>
+              <strong>Selected Tags:</strong>{" "}
+              {selectedTags.length > 0 ? selectedTags.join(", ") : "None"}
+            </p>
+            {feedbackNote && (
+              <p>
+                <strong>Note:</strong> {feedbackNote.substring(0, 100)}
+                {feedbackNote.length > 100 ? "..." : ""}
+              </p>
+            )}
+          </div>
+
+          {caseData.riskScore > 75 && (
+            <div className="bg-red-50 dark:bg-red-950/20 p-3 rounded-lg text-sm text-red-800 dark:text-red-200">
+              <AlertCircle className="h-4 w-4 inline mr-2" />
+              <strong>Warning:</strong> This is a high-risk case. Ensure all
+              information is accurate before finalizing.
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfirmation(false);
+                setPendingAction(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirm}>
+              <Send className="h-4 w-4 mr-2" />
+              Finalize Decision
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <Dialog open={isFinalized} onOpenChange={setIsFinalized}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              Decision Finalized
+            </DialogTitle>
+            <DialogDescription>
+              Your decision has been recorded and saved to the audit trail.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg text-sm">
+            <p className="text-green-800 dark:text-green-200">
+              Case {caseData.id} has been successfully processed. You will be
+              redirected to the queue shortly.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Demo Disclaimer */}
       <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">

@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ChatAssistant } from "@/components/dashboard/ChatAssistant";
+import { DecisionWidget } from "@/components/dashboard/DecisionWidget";
 import {
   AlertTriangle,
   ChevronLeft,
@@ -111,8 +113,29 @@ export default function CaseViewerPage({
   const hasNextCase = getNextCase(caseData.id) !== undefined;
   const hasPreviousCase = getPreviousCase(caseData.id) !== undefined;
 
+  const handleChatAction = (action: string, payload?: any) => {
+    switch (action) {
+      case "toggle-heatmap":
+        setShowHeatmap(!showHeatmap);
+        break;
+      case "next-case":
+        handleNext();
+        break;
+      case "go-to-decision":
+        router.push(`/dashboard/decision/${caseData.id}`);
+        break;
+      case "summarize":
+        // Scroll to findings section
+        window.scrollTo({ top: 400, behavior: "smooth" });
+        break;
+      default:
+        console.log("Unknown action:", action);
+    }
+  };
+
   return (
     <div className="space-y-6">
+      &lt;
       {/* Header with Navigation */}
       <div className="flex items-center justify-between">
         <div>
@@ -148,7 +171,6 @@ export default function CaseViewerPage({
           </Button>
         </div>
       </div>
-
       {/* Uncertainty Alert */}
       {caseData.uncertaintyFlag && (
         <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
@@ -170,7 +192,6 @@ export default function CaseViewerPage({
           </CardContent>
         </Card>
       )}
-
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Image Viewer (2/3 width) */}
@@ -452,7 +473,8 @@ export default function CaseViewerPage({
           </Card>
         </div>
       </div>
-
+      {/* Floating Chat Assistant */}
+      <ChatAssistant caseId={caseData.id} onAction={handleChatAction} />
       {/* Demo Disclaimer */}
       <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
         <CardContent className="pt-6">

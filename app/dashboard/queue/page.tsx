@@ -12,6 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -19,7 +27,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AlertTriangle, Clock, Search, Inbox } from "lucide-react";
+import {
+  AlertTriangle,
+  Clock,
+  Search,
+  Inbox,
+  CheckCircle,
+  XCircle,
+  Eye,
+} from "lucide-react";
 
 export default function QueuePage() {
   const [filters, setFilters] = useState<QueueFilters>({
@@ -29,6 +45,8 @@ export default function QueuePage() {
     uncertaintyOnly: false,
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [quickActionCase, setQuickActionCase] = useState<Case | null>(null);
+  const [showQuickAction, setShowQuickAction] = useState(false);
 
   // Apply filters
   const filteredCases = useMemo(() => {
@@ -141,6 +159,12 @@ export default function QueuePage() {
       finalized: "outline",
     };
     return <Badge variant={variants[status]}>{labels[status]}</Badge>;
+  };
+
+  const handleQuickAction = (caseItem: Case, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setQuickActionCase(caseItem);
+    setShowQuickAction(true);
   };
 
   return (
@@ -296,15 +320,25 @@ export default function QueuePage() {
                         {new Date(caseItem.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/dashboard/case/${caseItem.id}`}>
+                        <div className="flex gap-2 justify-end">
+                          <Link href={`/dashboard/case/${caseItem.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
+                          </Link>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => handleQuickAction(caseItem, e)}
                           >
-                            Review
+                            Quick Action
                           </Button>
-                        </Link>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -314,6 +348,52 @@ export default function QueuePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Quick Action Dialog */}
+      <Dialog open={showQuickAction} onOpenChange={setShowQuickAction}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Quick Actions</DialogTitle>
+            <DialogDescription>
+              {quickActionCase && (
+                <>
+                  Case {quickActionCase.id} • Risk: {quickActionCase.riskScore}
+                  /100
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <Link href={`/dashboard/case/${quickActionCase?.id}`}>
+              <Button variant="outline" className="w-full justify-start">
+                <Eye className="h-4 w-4 mr-2" />
+                View Full Case Details
+              </Button>
+            </Link>
+            <Link href={`/dashboard/decision/${quickActionCase?.id}`}>
+              <Button variant="outline" className="w-full justify-start">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Make Decision
+              </Button>
+            </Link>
+            {quickActionCase && quickActionCase.riskScore > 75 && (
+              <div className="bg-amber-50 dark:bg-amber-950/20 p-3 rounded-lg text-sm">
+                <AlertTriangle className="h-4 w-4 inline mr-2 text-amber-600" />
+                <span className="text-amber-800 dark:text-amber-200">
+                  High-risk case. Full review recommended before decision.
+                </span>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowQuickAction(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
