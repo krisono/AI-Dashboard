@@ -1,4 +1,4 @@
-// MammoAssist Mock Data - Simulated for demonstration only
+// AI Assist Mock Data - Simulated for demonstration only
 
 import { Case, Finding, AuditEvent, Decision } from './types';
 

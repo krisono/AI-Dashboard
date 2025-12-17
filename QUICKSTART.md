@@ -1,4 +1,4 @@
-# MammoAssist - Quick Start Guide
+# AI Assist - Quick Start Guide
 
 ## 🎯 Stage 1: Complete ✅
 
@@ -37,7 +37,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📁 Current Structure
 
 ```
-MammoAssist/
+AI-Assist/
 ├── app/
 │   ├── layout.tsx           # Root layout with metadata
 │   ├── page.tsx             # Landing page

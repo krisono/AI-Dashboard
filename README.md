@@ -1,6 +1,6 @@
-# MammoAssist
+# AI Assist
 
-An AI-assisted radiology "second-reader" dashboard for screening mammography. This is a **demo prototype** for educational purposes only, not a real medical device.
+Interactive Human–AI collaboration dashboard prototype. This is a **demo prototype** for educational purposes only, not a real medical device.
 
 ## 🚀 Stage 1 Complete: Scaffold & Base Layout
 

@@ -1,4 +1,4 @@
-// MammoAssist Data Types
+// AI Assist Data Types
 
 export interface Case {
   id: string;

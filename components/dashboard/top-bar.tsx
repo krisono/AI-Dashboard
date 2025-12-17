@@ -37,11 +37,11 @@ export function TopBar({
         {/* AI Advisory Badge */}
         <Badge
           variant="outline"
-          className="hidden sm:flex gap-1 border-amber-300 bg-amber-50 text-amber-800"
+          className="hidden sm:flex gap-1.5 border-muted-foreground/20 bg-muted/30 text-muted-foreground text-xs"
         >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-40"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
           </span>
           AI Advisory
         </Badge>
@@ -49,13 +49,15 @@ export function TopBar({
         {/* Search */}
         <div className="flex-1 max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search cases, patients, accession numbers..."
-              className="pl-9 w-full"
+              placeholder="Search cases..."
+              className="pl-8 h-9 text-sm bg-muted/30 border-muted-foreground/20"
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
               aria-label="Search"
             />
           </div>
@@ -63,30 +65,34 @@ export function TopBar({
 
         {/* Voice Command Button */}
         <Button
-          variant={isVoiceActive ? "default" : "outline"}
-          size="icon"
+          variant={isVoiceActive ? "default" : "ghost"}
+          size="sm"
           onClick={() => setIsVoiceActive(!isVoiceActive)}
           aria-label={
             isVoiceActive ? "Stop voice command" : "Start voice command"
           }
           aria-pressed={isVoiceActive}
+          className="gap-2"
         >
           {isVoiceActive ? (
-            <Mic className="h-4 w-4 animate-pulse" />
+            <>
+              <Mic className="h-3.5 w-3.5 animate-pulse" />
+              <span className="hidden md:inline text-xs">Listening</span>
+            </>
           ) : (
-            <MicOff className="h-4 w-4" />
+            <>
+              <MicOff className="h-3.5 w-3.5" />
+              <span className="hidden md:inline text-xs">Voice</span>
+            </>
           )}
         </Button>
 
         {/* Demo Mode Toggle */}
-        <Button
-          variant={isDemoMode ? "default" : "outline"}
-          size="sm"
-          onClick={onDemoModeToggle}
-          className="hidden md:flex"
-        >
-          {isDemoMode ? "Demo Mode" : "Live Mode"}
-        </Button>
+        <div className="hidden md:flex items-center gap-2 pl-2 border-l">
+          <span className="text-xs text-muted-foreground">
+            {isDemoMode ? "Demo" : "Live"}
+          </span>
+        </div>
 
         {/* User info */}
         <div className="hidden sm:block text-right">

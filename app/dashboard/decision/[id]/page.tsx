@@ -110,7 +110,7 @@ export default function DecisionPage({
       userId: "Dr. Demo User",
       feedbackNote,
       feedbackTags: selectedTags,
-      draftReport: draftReport || '',
+      draftReport: draftReport || "",
       requiresConfirmation: caseData.riskScore > 75 || caseData.uncertaintyFlag,
     };
 

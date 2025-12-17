@@ -39,7 +39,7 @@ Optional: Add `OPENAI_API_KEY` if using OpenAI integration
    ```bash
    git init
    git add .
-   git commit -m "Initial commit: MammoAssist dashboard"
+   git commit -m \"Initial commit: AI Assist dashboard\"
    git remote add origin <your-repo-url>
    git push -u origin main
    ```

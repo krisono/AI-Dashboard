@@ -1,4 +1,4 @@
-// Bias monitoring and metrics calculation for MammoAssist
+// Bias monitoring and metrics calculation for AI Assist
 
 import { Case, BiasMetric } from './types';
 import { mockCases } from './mockData';

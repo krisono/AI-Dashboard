@@ -1,4 +1,4 @@
-// Mock AI functions for MammoAssist - Simulated for demonstration only
+// Mock AI functions for AI Assist - Simulated for demonstration only
 
 import { Finding, ChatMessage, VoiceCommand } from './types';
 import { mockFindings, getCaseById } from './mockData';
