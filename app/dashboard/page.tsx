@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { ChatAssistant } from "@/components/dashboard/ChatAssistant";
 import { ImageScanCard } from "@/components/dashboard/ImageScanCard";
+import { VoiceAssistant } from "@/components/dashboard/VoiceAssistant";
 import {
   AlertCircle,
   CheckCircle2,
@@ -193,6 +194,9 @@ export default function DashboardPage() {
 
       {/* Image Scan Card */}
       <ImageScanCard />
+
+      {/* Voice Assistant */}
+      <VoiceAssistant onCommand={(cmd) => console.log("Voice command:", cmd)} />
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-4">
