@@ -38,5 +38,6 @@ next-env.d.ts
 # IDE
 .vscode
 .idea
+
 # Markdown documentation files
 *.md
